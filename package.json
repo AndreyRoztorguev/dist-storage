@@ -1,0 +1,24 @@
+{
+  "name": "dist-storage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file=.env dist/index.js",
+    "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts",
+    "dev": "node --watch --env-file=.env --experimental-transform-types src/index.ts",
+    "build": "tsc --build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.5",
+    "typescript": "^5.7.3"
+  }
+}
