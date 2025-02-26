@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { prisma } from "../../config/db.ts";
 import { AppError } from "../../utils/AppError.ts";
-import { Prisma } from "@prisma/client";
 import { CreateUserDto } from "./dto/signup.ts";
+import { loginDTO } from "./dto/login.ts";
 
 class AuthController {
   async signup(req: Request, res: Response, next: NextFunction) {
@@ -36,10 +37,12 @@ class AuthController {
   }
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return next(AppError.badRequest("Email and password are required"));
+      const { error } = loginDTO.validate(req.body);
+      if (error) {
+        return next(AppError.badRequest(error.message));
       }
+      const { email, password } = req.body;
+
       const user = await prisma.user.findUnique({ where: { email } });
 
       if (!user) {
@@ -50,11 +53,19 @@ class AuthController {
         return next(AppError.badRequest("Invalid credentials"));
       }
 
-      res.json({ user });
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: "1m" });
+
+      res.cookie("accessToken", token, {
+        httpOnly: true, // Prevents JavaScript access (security)
+        secure: true, // Only send over HTTPS
+        sameSite: "strict",
+        maxAge: 60 * 1000, // 60sec // 60 * 60 * 1000, // 1 hour
+      });
+
+      res.json({ user, token });
     } catch (error) {
-      res
-        .status(500)
-        .json({ error: "login failed", message: error instanceof Error ? error.message : error });
+      const message = error instanceof Error ? error.message : String(error);
+      next(new AppError(message, 500));
     }
   }
 }
