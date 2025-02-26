@@ -1,37 +1,21 @@
 import express from "express";
-import AuthRouter from "./routes/auth.router.ts";
-import client from "./config/db.ts";
 
-const PORT = process.env.PORT || 8080;
+import authRouter from "./routes/auth.router.ts";
+import userRouter from "./routes/user.router.ts";
+import { errorMiddleware } from "./middlewares/errorMiddleware.ts";
+import setup from "./config/setup.ts";
+
+setup();
 
 const app = express();
-try {
-  client
-    .connect()
-    .then(() => {
-      console.log("Connected to PostgreSQL database");
-    })
-    .catch((err) => {
-      console.error("Error connecting to PostgreSQL database", err);
-    });
-  app.get("/users", async (req, res) => {
-    try {
-      const result = await client.query("SELECT NOW()");
-      res.json(result.rows);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
 
-  app.use("/api/auth", AuthRouter);
-  app.get("*", (req, res) => {
-    res.send(new Date().toLocaleTimeString());
-  });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", userRouter);
+app.use(errorMiddleware);
 
-  app.listen(PORT, () => {
-    console.log(`listening on ${PORT}`);
-  });
-} catch (error) {
-  console.log(error);
-}
+app.listen(process.env.PORT, () => {
+  console.log(process.env.DATABASE_URL);
+  console.log(`listening on port ${process.env.PORT}`);
+});
