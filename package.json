@@ -4,23 +4,39 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --env-file=.env dist/index.js",
-    "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts",
-    "dev": "node --watch --env-file=.env --experimental-transform-types src/index.ts",
-    "build": "tsc --build"
+    "start": "node --watch --env-file=.env --experimental-transform-types src/index.ts",
+    "dev": "nodemon",
+    "build": "tsc --build",
+    "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/adapter-pg": "^6.4.1",
+    "@prisma/client": "^6.4.1",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pg": "^8.13.3"
+    "express-session": "^1.18.1",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.4.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.13.5",
+    "@types/express-session": "^1.18.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^16.11.10",
     "@types/pg": "^8.11.11",
-    "typescript": "^5.7.3"
+    "nodemon": "^3.1.9",
+    "prisma": "^6.4.1",
+    "ts-node": "^10.9.1"
   }
 }
