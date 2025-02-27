@@ -6,6 +6,8 @@ import authRouter from "./routes/auth.router.ts";
 import userRouter from "./routes/user.router.ts";
 import { errorMiddleware } from "./middlewares/errorMiddleware.ts";
 import setup from "./config/setup.ts";
+import { authMiddleware } from "./middlewares/authMiddleware.ts";
+import { CookieService } from "./services/Cookie.service.ts";
 
 setup();
 
@@ -24,14 +26,11 @@ app.use(cookieParser());
 //   })
 // );
 
-app.get("/api/v1/", (req, res) => {
-  const token = req.cookies.accessToken;
-  if (!token) {
-    res.json({ message: "fail" });
-    return;
-  }
+app.get("/api/v1/", authMiddleware, (req, res) => {
+  const accessToken = CookieService.getCookie(req, "accessToken");
+  const refreshToken = CookieService.getCookie(req, "refreshToken");
 
-  res.json({ token });
+  res.json({ accessToken, refreshToken });
 });
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
