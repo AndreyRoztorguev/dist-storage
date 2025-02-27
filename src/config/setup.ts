@@ -11,7 +11,8 @@ const envSchema = Joi.object({
   DB_DIALECT: Joi.string().required(),
   DATABASE_URL: Joi.string().required(),
   BCRYPT_SOLT: Joi.string().required(),
-  JWT_SECRET: Joi.string().required(),
+  JWT_ACCESS_SECRET: Joi.string().required(),
+  JWT_REFRESH_SECRET: Joi.string().required(),
 }).unknown(true);
 
 function setup() {
