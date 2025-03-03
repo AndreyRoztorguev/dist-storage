@@ -4,6 +4,7 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.router.ts";
 import userRouter from "./routes/user.router.ts";
+import uploadRouter from "./routes/upload.router.ts";
 import { errorMiddleware } from "./middlewares/errorMiddleware.ts";
 import setup from "./config/setup.ts";
 import { authMiddleware } from "./middlewares/authMiddleware.ts";
@@ -17,6 +18,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use("/static", express.static("static"));
 // app.use(
 //   session({
 //     secret: "your-secret-key", // Change this to a secure secret
@@ -34,6 +36,7 @@ app.get("/api/v1/", authMiddleware, (req, res) => {
 });
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/upload", uploadRouter);
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

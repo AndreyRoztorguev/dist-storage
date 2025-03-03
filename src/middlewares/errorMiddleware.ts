@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/AppError.ts";
+import multer from "multer";
 
 function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunction) {
   let statusCode = 500;
@@ -7,6 +8,11 @@ function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunc
 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
+    message = err.message;
+  }
+
+  if (err instanceof multer.MulterError) {
+    statusCode = 400;
     message = err.message;
   }
 
