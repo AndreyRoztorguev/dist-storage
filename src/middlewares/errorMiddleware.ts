@@ -4,7 +4,7 @@ import multer from "multer";
 
 function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunction) {
   let statusCode = 500;
-  let message = "Something went wrong";
+  let message = err.message || "Something went wrong";
 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
@@ -16,7 +16,7 @@ function errorMiddleware(err: Error, req: Request, res: Response, next: NextFunc
     message = err.message;
   }
 
-  res.status(statusCode).json({ error: message });
+  res.status(statusCode).json({ error: message, stack: err.stack });
 }
 
 export { errorMiddleware };

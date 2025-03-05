@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
+import passport from "passport";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.router.ts";
 import userRouter from "./routes/user.router.ts";
@@ -18,7 +19,22 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Set to true in production with HTTPS
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/static", express.static("static"));
+
 // app.use(
 //   session({
 //     secret: "your-secret-key", // Change this to a secure secret
@@ -31,7 +47,6 @@ app.use("/static", express.static("static"));
 app.get("/api/v1/", authMiddleware, (req, res) => {
   const accessToken = CookieService.getCookie(req, "accessToken");
   const refreshToken = CookieService.getCookie(req, "refreshToken");
-
   res.json({ accessToken, refreshToken });
 });
 app.use("/api/v1/auth", authRouter);

@@ -13,6 +13,11 @@ const envSchema = Joi.object({
   BCRYPT_SOLT: Joi.string().required(),
   JWT_ACCESS_SECRET: Joi.string().required(),
   JWT_REFRESH_SECRET: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_AUTHORIZED_REDIRECT_URI: Joi.string().required(),
+  CLIENT_URI: Joi.string().required(),
+  SESSION_SECRET: Joi.string().required(),
 }).unknown(true);
 
 function setup() {
