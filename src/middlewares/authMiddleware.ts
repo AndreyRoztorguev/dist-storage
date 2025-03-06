@@ -6,12 +6,14 @@ import { CookieService } from "../services/Cookie.service.ts";
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
     const accessToken = CookieService.getCookie(req, "accessToken");
-    if (!accessToken || !JWT.verifyAccessToken(accessToken)) {
-      return next(AppError.unauthorized());
+
+    if ((accessToken && JWT.verifyAccessToken(accessToken)) || req.isAuthenticated()) {
+      return next();
     }
-    next();
+
+    next(AppError.unauthorized());
   } catch (error) {
-    AppError.internalServerError();
+    next(AppError.internalServerError());
   }
 }
 

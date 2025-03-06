@@ -1,10 +1,8 @@
 import { Router } from "express";
 import passport from "passport";
-import authController from "../controllers/auth/auth.controller.ts";
 import { Strategy as GoogleOauth20Strategy } from "passport-google-oauth20";
-import { prisma } from "../config/db.ts";
-import { AppError } from "../utils/AppError.ts";
-import AuthService from "../services/Auth.service.ts";
+import authController from "../controllers/auth/auth.controller.ts";
+import GoogleAuthService from "../services/GoogleAuth.service.ts";
 
 const router = Router();
 
@@ -18,19 +16,31 @@ passport.use(
     },
     async function verify(accessToken, refreshToken, profile, done) {
       try {
-        const { emails: [email] = [] } = profile;
-        const user = await prisma.user.findUnique({ where: { email: email.value } });
-        if (!user) return done(AppError.unauthorized());
-        if (!user) {
-          // const user = await AuthService.signup({ data });
-        }
-        return done(null, profile);
+        const { emails: [email] = [], name = { givenName: "" }, id } = profile;
+
+        const { user } = await GoogleAuthService.login({
+          email: email.value,
+          name: name.givenName,
+          google_id: id,
+        });
+        return done(null, user);
       } catch (error) {
         done(error);
       }
     }
   )
 );
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser(async (user, done) => {
+  try {
+    done(null, user!);
+  } catch (error) {
+    done(error, null);
+  }
+});
 
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
@@ -43,23 +53,11 @@ router.get(
     failureRedirect: process.env.CLIENT_URI + "/login",
   })
 );
-router.post("/logout", function (req, res, next) {
+router.get("/logout", function (req, res, next) {
   req.logout(function (err) {
     if (err) return next(err);
     res.redirect("/");
   });
-});
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser(async (user, done) => {
-  try {
-    done(null, user!);
-  } catch (error) {
-    done(error, null);
-  }
 });
 
 export default router;

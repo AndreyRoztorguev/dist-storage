@@ -26,8 +26,7 @@ class AuthService {
 
       return { newuser, accessToken, refreshToken };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new AppError(message, 500);
+      throw error;
     }
   }
   async login({ dto }: { dto: LoginDTO }) {
@@ -39,6 +38,9 @@ class AuthService {
       if (!user) {
         throw AppError.notFound();
       }
+      if (!user.password) {
+        throw AppError.badRequest("No password");
+      }
 
       if (!bcrypt.compareSync(password, user.password)) {
         throw AppError.badRequest("Invalid credentials");
@@ -49,8 +51,7 @@ class AuthService {
 
       return { user, accessToken, refreshToken };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new AppError(message, 500);
+      throw error;
     }
   }
   async refreshAccessToken({ refreshToken }: { refreshToken: string }) {
@@ -64,8 +65,7 @@ class AuthService {
 
       return { accessToken };
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      throw new AppError(message, 500);
+      throw error;
     }
   }
 }

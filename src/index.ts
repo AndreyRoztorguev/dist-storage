@@ -23,18 +23,19 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET!,
     resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Set to true in production with HTTPS
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
-    },
+    saveUninitialized: true,
+    cookie: { secure: false },
+    // cookie: {
+    //   secure: process.env.NODE_ENV === "production", // Set to true in production with HTTPS
+    //   httpOnly: true,
+    //   maxAge: 1000 * 60 * 60 * 24, // 1 day
+    // },
   })
 );
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/static", express.static("static"));
-app.get("/api/v1/", authMiddleware, (req, res) => {
+app.get("/api/v1", authMiddleware, (req, res) => {
   const accessToken = CookieService.getCookie(req, "accessToken");
   const refreshToken = CookieService.getCookie(req, "refreshToken");
   res.json({ accessToken, refreshToken });

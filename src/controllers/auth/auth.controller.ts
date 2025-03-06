@@ -23,8 +23,7 @@ class AuthController {
 
       res.status(201).json(newuser);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      next(new AppError(message, 500));
+      next(error);
     }
   }
   async login(req: Request, res: Response, next: NextFunction) {
@@ -43,8 +42,7 @@ class AuthController {
 
       res.json({ user, accessToken });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      next(new AppError(message, 500));
+      next(error);
     }
   }
   async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
@@ -54,8 +52,7 @@ class AuthController {
       CookieService.setCookie(res, "accessToken", accessToken, { maxAge: 60 * 1000 }); // 60 seconds
       res.json({ accessToken });
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      next(new AppError(message, 500));
+      next(error);
     }
   }
 }

@@ -7,7 +7,8 @@
     "start": "node --watch --env-file=.env --experimental-transform-types src/index.ts",
     "dev": "nodemon",
     "build": "tsc --build",
-    "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts"
+    "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts",
+    "migration":"prisma migrate dev --name make_password_nullable"
   },
   "keywords": [],
   "author": "",
