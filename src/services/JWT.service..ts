@@ -22,4 +22,4 @@ class JWT {
   }
 }
 
-export default JWT;
+export { JWT };

@@ -4,6 +4,7 @@ import authController from "../controllers/auth/auth.controller.ts";
 import { Strategy as GoogleOauth20Strategy } from "passport-google-oauth20";
 import { prisma } from "../config/db.ts";
 import { AppError } from "../utils/AppError.ts";
+import AuthService from "../services/Auth.service.ts";
 
 const router = Router();
 
@@ -20,6 +21,9 @@ passport.use(
         const { emails: [email] = [] } = profile;
         const user = await prisma.user.findUnique({ where: { email: email.value } });
         if (!user) return done(AppError.unauthorized());
+        if (!user) {
+          // const user = await AuthService.signup({ data });
+        }
         return done(null, profile);
       } catch (error) {
         done(error);

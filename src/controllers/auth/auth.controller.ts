@@ -1,38 +1,20 @@
 import type { NextFunction, Request, Response } from "express";
-import { hashPassword } from "../../utils/hashPassword.ts";
-import bcrypt from "bcrypt";
-import { prisma } from "../../config/db.ts";
-import { AppError } from "../../utils/AppError.ts";
-import { CreateUserDto } from "./dto/signup.ts";
-import { loginDTO } from "./dto/login.ts";
-import JWT from "../../services/JWT.service..ts";
+import AuthService from "../../services/Auth.service.ts";
 import { CookieService } from "../../services/Cookie.service.ts";
+import { AppError } from "../../utils/AppError.ts";
+import { loginDTOShema } from "./dto/login.ts";
+import { SignupDTOShema } from "./dto/signup.ts";
 
 class AuthController {
   async signup(req: Request, res: Response, next: NextFunction) {
     try {
-      const { error } = CreateUserDto.validate(req.body);
+      const { error, value: userdata } = SignupDTOShema.validate(req.body);
 
       if (error) {
         return next(AppError.badRequest(error.message));
       }
 
-      if (await prisma.user.findUnique({ where: { email: req.body.email } })) {
-        return next(
-          AppError.badRequest(
-            "A user with this email already exists. Please use a different email address."
-          )
-        );
-      }
-
-      const hashedPassword = await hashPassword(req.body.password);
-
-      const newuser = await prisma.user.create({
-        data: { ...req.body, password: hashedPassword },
-      });
-
-      const accessToken = JWT.generateAccessToken({ userId: newuser.id });
-      const refreshToken = JWT.generateRefreshToken({ userId: newuser.id });
+      const { newuser, accessToken, refreshToken } = await AuthService.signup({ dto: userdata });
 
       CookieService.setCookie(res, "accessToken", accessToken, { maxAge: 60 * 1000 }); // 60 seconds
       CookieService.setCookie(res, "refreshToken", refreshToken, {
@@ -47,24 +29,12 @@ class AuthController {
   }
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { error } = loginDTO.validate(req.body);
+      const { error, value } = loginDTOShema.validate(req.body);
       if (error) {
         return next(AppError.badRequest(error.message));
       }
-      const { email, password } = req.body;
 
-      const user = await prisma.user.findUnique({ where: { email } });
-
-      if (!user) {
-        return next(AppError.notFound());
-      }
-
-      if (!bcrypt.compareSync(password, user.password)) {
-        return next(AppError.badRequest("Invalid credentials"));
-      }
-
-      const accessToken = JWT.generateAccessToken({ userId: user.id });
-      const refreshToken = JWT.generateRefreshToken({ userId: user.id });
+      const { user, accessToken, refreshToken } = await AuthService.login({ dto: value });
 
       CookieService.setCookie(res, "accessToken", accessToken, { maxAge: 60 * 1000 }); // 60 seconds
       CookieService.setCookie(res, "refreshToken", refreshToken, {
@@ -80,14 +50,8 @@ class AuthController {
   async refreshAccessToken(req: Request, res: Response, next: NextFunction) {
     try {
       const refreshToken = CookieService.getCookie(req, "refreshToken");
-      const user = JWT.verifyRefreshToken(refreshToken);
-      if (!user) {
-        return next(AppError.unauthorized());
-      }
-      const accessToken = JWT.generateAccessToken({ userId: user.userId });
-
+      const { accessToken } = await AuthService.refreshAccessToken({ refreshToken });
       CookieService.setCookie(res, "accessToken", accessToken, { maxAge: 60 * 1000 }); // 60 seconds
-
       res.json({ accessToken });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

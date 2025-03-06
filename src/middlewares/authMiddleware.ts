@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import JWT from "../services/JWT.service..ts";
+import { JWT } from "../services/JWT.service..ts";
 import { AppError } from "../utils/AppError.ts";
 import { CookieService } from "../services/Cookie.service.ts";
 

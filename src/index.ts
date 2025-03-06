@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-secret-key",
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -34,16 +34,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/static", express.static("static"));
-
-// app.use(
-//   session({
-//     secret: "your-secret-key", // Change this to a secure secret
-//     resave: false, // Avoid resaving unchanged sessions
-//     saveUninitialized: false, // Avoid saving empty sessions
-//     cookie: { secure: false, maxAge: 1000 * 60 * 60 }, // Set cookie options
-//   })
-// );
-
 app.get("/api/v1/", authMiddleware, (req, res) => {
   const accessToken = CookieService.getCookie(req, "accessToken");
   const refreshToken = CookieService.getCookie(req, "refreshToken");
