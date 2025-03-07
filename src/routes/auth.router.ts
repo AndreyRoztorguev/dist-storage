@@ -1,8 +1,9 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import passport from "passport";
 import { Strategy as GoogleOauth20Strategy } from "passport-google-oauth20";
 import authController from "../controllers/auth/auth.controller.ts";
 import GoogleAuthService from "../services/GoogleAuth.service.ts";
+import { authMiddleware } from "../middlewares/authMiddleware.ts";
 
 const router = Router();
 
@@ -46,6 +47,9 @@ router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.get("/refresh", authController.refreshAccessToken);
 router.get("/login/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/check-session", authMiddleware, (req: Request, res: Response) => {
+  res.status(200).json({ message: "Authenticated" });
+});
 router.get(
   "/callback/google",
   passport.authenticate("google", {
