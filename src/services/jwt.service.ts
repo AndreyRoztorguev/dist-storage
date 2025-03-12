@@ -1,9 +1,9 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
 class JWT {
-  static generateAccessToken(payload: object): string {
+  static generateAccessToken(payload: JwtPayload): string {
     return jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {
-      expiresIn: "1m",
+      expiresIn: "1h",
     });
   }
 

@@ -18,6 +18,7 @@ const envSchema = Joi.object({
   GOOGLE_AUTHORIZED_REDIRECT_URI: Joi.string().required(),
   CLIENT_URI: Joi.string().required(),
   SESSION_SECRET: Joi.string().required(),
+  GOOGLE_API_KEY: Joi.string().required(),
 }).unknown(true);
 
 function setup() {

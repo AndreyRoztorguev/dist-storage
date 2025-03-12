@@ -15,9 +15,24 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(cuid())
-  name      String
-  email     String  @unique
-  password  String?
-  google_id String?
+  id            String             @id @default(cuid())
+  name          String
+  email         String             @unique
+  password      String?
+  oauthAccounts UserOAuthAccount[]
+  createdAt     DateTime           @default(now())
+}
+
+model UserOAuthAccount {
+  id                String   @id @default(uuid())
+  userId            String
+  provider          String // google, github, facebook
+  providerAccountId String // ID акаунту у провайдера (наприклад, Google ID)
+  refreshToken      String? // Зберігаємо refresh токен (якщо провайдер його дає)
+  accessToken       String? // Можна зберігати, але частіше просто оновлюють через refresh
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId]) // Унікальний запис для кожного OAuth-акаунту
 }

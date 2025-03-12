@@ -18,6 +18,14 @@ class CookieService {
   static clearCookie(res: Response, name: string, options: CookieOptions) {
     res.clearCookie(name, options);
   }
+
+  static setAccessToken(res: Response, accessToken: string) {
+    this.setCookie(res, "accessToken", accessToken, { maxAge: 60 * 60 * 1000 });
+  }
+
+  static setRefreshToken(res: Response, refreshToken: string) {
+    this.setCookie(res, "refreshToken", refreshToken, { maxAge: 7 * 24 * 60 * 60 * 1000 }); // 7 days
+  }
 }
 
 export { CookieService };

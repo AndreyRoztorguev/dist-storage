@@ -1,6 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-import { AppError } from "../utils/AppError.ts";
-import multer from "multer";
 
 class UploadController {
   async uploadSingleImage(req: Request, res: Response, next: NextFunction) {

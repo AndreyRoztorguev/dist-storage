@@ -4,7 +4,7 @@ import type { LoginDTO } from "../controllers/auth/dto/login.ts";
 import { type SignupDTO } from "../controllers/auth/dto/signup.ts";
 import { AppError } from "../utils/AppError.ts";
 import { hashPassword } from "../utils/hashPassword.ts";
-import { JWT } from "./JWT.service..ts";
+import { JWT } from "./jwt.service.ts";
 
 class AuthService {
   async signup({ dto }: { dto: SignupDTO }) {
@@ -21,8 +21,8 @@ class AuthService {
         data: { ...dto, password: hashedPassword },
       });
 
-      const accessToken = JWT.generateAccessToken({ userId: newuser.id });
-      const refreshToken = JWT.generateRefreshToken({ userId: newuser.id });
+      const accessToken = JWT.generateAccessToken({ sub: newuser.id });
+      const refreshToken = JWT.generateRefreshToken({ sub: newuser.id });
 
       return { newuser, accessToken, refreshToken };
     } catch (error) {
@@ -46,8 +46,8 @@ class AuthService {
         throw AppError.badRequest("Invalid credentials");
       }
 
-      const accessToken = JWT.generateAccessToken({ userId: user.id });
-      const refreshToken = JWT.generateRefreshToken({ userId: user.id });
+      const accessToken = JWT.generateAccessToken({ sub: user.id });
+      const refreshToken = JWT.generateRefreshToken({ sub: user.id });
 
       return { user, accessToken, refreshToken };
     } catch (error) {
@@ -61,7 +61,7 @@ class AuthService {
         throw AppError.unauthorized();
       }
 
-      const accessToken = JWT.generateAccessToken({ userId: user.userId });
+      const accessToken = JWT.generateAccessToken({ sub: user.userId });
 
       return { accessToken };
     } catch (error) {

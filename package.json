@@ -8,7 +8,7 @@
     "dev": "nodemon",
     "build": "tsc --build",
     "start:ts": "node --env-file=.env --experimental-transform-types src/index.ts",
-    "migration":"prisma migrate dev --name make_password_nullable"
+    "migration": "prisma migrate dev --name make_password_nullable"
   },
   "keywords": [],
   "author": "",
@@ -23,8 +23,10 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "googleapis": "^146.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
+    "mime-types": "^2.1.35",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
@@ -37,6 +39,7 @@
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/mime-types": "^2.1.4",
     "@types/multer": "^1.4.12",
     "@types/node": "^16.11.10",
     "@types/passport": "^1.0.17",

@@ -1,4 +1,3 @@
-import type { NextFunction } from "express";
 import multer from "multer";
 
 class MulterService {
@@ -22,6 +21,10 @@ class MulterService {
     });
 
     return multer({ storage, ...options }).array(fieldName, options.limits?.files || Infinity);
+  }
+
+  static uploadGoogleDrive(fieldName: string) {
+    return multer({ storage: multer.memoryStorage() }).single(fieldName);
   }
 }
 
